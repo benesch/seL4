@@ -457,6 +457,7 @@ timerTick(void)
                ThreadState_Running)) {
         if (ksCurThread->tcbTimeSlice > 1) {
             ksCurThread->tcbTimeSlice--;
+            ksCurThread->tcbPreemptionCount++;
         } else {
             ksCurThread->tcbTimeSlice = CONFIG_TIME_SLICE;
             tcbSchedAppend(ksCurThread);

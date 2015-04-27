@@ -295,6 +295,14 @@ decodeTCBInvocation(word_t label, unsigned int length, cap_t cap,
     case TCBActivate:
         return invokeTCB_Activate(
                    TCB_PTR(cap_thread_cap_get_capTCBPtr(cap)));
+
+    case TCBGetPreemptionCount: {
+        setRegister(ksCurThread, badgeRegister, 0);
+        setRegister(ksCurThread, msgInfoRegister, wordFromMessageInfo(
+                    message_info_new(TCB_PTR(cap_thread_cap_get_capTCBPtr(cap))->tcbPreemptionCount, 0, 0, 1)));
+        setThreadState(ksCurThread, ThreadState_Running);
+        return 0;
+    }
     /* END SCHEDUL4 */
 
     case TCBConfigure:

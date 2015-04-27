@@ -67,6 +67,7 @@
 		</method>
 		<!-- START SCHEDUL4 -->
 		<method id="TCBActivate" name="Activate"/>
+		<method id="TCBGetPreemptionCount" name="GetPreemptionCount"/>
 		<!-- END SCHEDUL4 -->
 		<method id="TCBSuspend" name="Suspend"/>
 		<method id="TCBResume" name="Resume"/>

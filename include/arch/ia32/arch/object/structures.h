@@ -191,6 +191,9 @@ struct tcb {
     /* userland virtual address of thread IPC buffer, 4 bytes */
     word_t tcbIPCBuffer;
 
+    /* SCHEDUL4: number of times this thread has failed to yield */
+    uint32_t tcbPreemptionCount;
+
     /* Previous and next pointers for endpoint & scheduler queues, 16 bytes */
     struct tcb* tcbSchedNext;
     struct tcb* tcbSchedPrev;
