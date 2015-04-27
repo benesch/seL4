@@ -19,6 +19,7 @@ void configureIdleThread(tcb_t *tcb);
 void activateThread(void) VISIBLE;
 void suspend(tcb_t *target);
 void restart(tcb_t *target);
+bool_t activate(tcb_t *target); /* SCHEDUL4 */
 void doIPCTransfer(tcb_t *sender, endpoint_t *endpoint,
                    word_t badge, bool_t grant, tcb_t *receiver,
                    bool_t diminish);

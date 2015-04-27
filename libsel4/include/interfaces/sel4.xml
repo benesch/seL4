@@ -65,6 +65,9 @@
 			<param dir="in" name="vspace_root" type="seL4_CNode"/>
 			<param dir="in" name="vspace_root_data" type="seL4_CapData_t"/>
 		</method>
+		<!-- START SCHEDUL4 -->
+		<method id="TCBActivate" name="Activate"/>
+		<!-- END SCHEDUL4 -->
 		<method id="TCBSuspend" name="Suspend"/>
 		<method id="TCBResume" name="Resume"/>
 	</interface>

@@ -291,6 +291,12 @@ decodeTCBInvocation(word_t label, unsigned int length, cap_t cap,
         return invokeTCB_Resume(
                    TCB_PTR(cap_thread_cap_get_capTCBPtr(cap)));
 
+    /* START SCHEDUL4 */
+    case TCBActivate:
+        return invokeTCB_Activate(
+                   TCB_PTR(cap_thread_cap_get_capTCBPtr(cap)));
+    /* END SCHEDUL4 */
+
     case TCBConfigure:
         return decodeTCBConfigure(cap, length, slot, extraCaps, buffer);
 
@@ -774,6 +780,19 @@ invokeTCB_Resume(tcb_t *thread)
     restart(thread);
     return EXCEPTION_NONE;
 }
+
+/* START SCHEDUL4 */
+exception_t
+invokeTCB_Activate(tcb_t *thread)
+{
+    if (activate(thread)) {
+        return EXCEPTION_NONE;
+    }
+    current_syscall_error.type = seL4_InvalidArgument;
+    current_syscall_error.invalidArgumentNumber = 0;
+    return EXCEPTION_SYSCALL_ERROR;
+}
+/* END SCHEDUL4 */
 
 exception_t
 invokeTCB_ThreadControl(tcb_t *target, cte_t* slot,

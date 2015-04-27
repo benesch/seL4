@@ -108,6 +108,18 @@ restart(tcb_t *target)
     }
 }
 
+/* START SCHEDUL4 */
+bool_t
+activate(tcb_t *target)
+{
+    if (!isBlocked(target)) {
+        ksSchedulerAction = target;
+        return true;
+    }
+    return false;
+}
+/* END SCHEDUL4 */
+
 void
 doIPCTransfer(tcb_t *sender, endpoint_t *endpoint, word_t badge,
               bool_t grant, tcb_t *receiver, bool_t diminish)
