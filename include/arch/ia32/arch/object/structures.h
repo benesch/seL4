@@ -162,7 +162,7 @@ typedef uint32_t tcb_cnode_index_t;
 /* TCB CNode: size = 256 bytes */
 /* typedef cte_t[16] tcb_cnode; */
 
-/* TCB: size = 652 bytes, alignment = 256 bytes */
+/* TCB: size = 648 bytes, alignment = 256 bytes */
 struct tcb {
     /* Saved user-level context of thread, 592 bytes */
     user_context_t tcbContext;
@@ -175,9 +175,6 @@ struct tcb {
 
     /* Current lookup failure, 8 bytes */
     lookup_fault_t tcbLookupFailure;
-
-    /* Domain, 1 byte (packed to 4) */
-    uint32_t tcbDomain;
 
     /* Priority, 1 byte (packed to 4) */
     uint32_t tcbPriority;
@@ -424,9 +421,6 @@ cap_get_capSizeBits(cap_t cap)
     case cap_null_cap:
         return 0;
 
-    case cap_domain_cap:
-        return 0;
-
     case cap_reply_cap:
         return 0;
 
@@ -495,9 +489,6 @@ cap_get_capPtr(cap_t cap)
         return CTE_PTR(cap_zombie_cap_get_capZombiePtr(cap));
 
     case cap_null_cap:
-        return NULL;
-
-    case cap_domain_cap:
         return NULL;
 
     case cap_reply_cap:

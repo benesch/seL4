@@ -224,7 +224,7 @@ static void sendRunqueues(void)
 {
     unsigned int i;
     sendWord((unsigned int)ksCurThread);
-    for (i = 0; i < NUM_READY_QUEUES; i++) {
+    for (i = 0; i < CONFIG_NUM_PRIORITIES; i++) {
         tcb_t *current = ksReadyQueues[i].head;
         if (current != 0) {
             while (current != ksReadyQueues[i].end) {

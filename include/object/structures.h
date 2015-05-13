@@ -22,11 +22,6 @@ enum irq_state {
 };
 typedef uint32_t irq_state_t;
 
-typedef struct dschedule {
-    dom_t domain;
-    uint32_t length;
-} dschedule_t;
-
 #include <arch/object/structures.h>
 
 #endif

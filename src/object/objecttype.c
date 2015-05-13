@@ -127,7 +127,6 @@ finaliseCap(cap_t cap, bool_t final, bool_t exposed)
 
     case cap_reply_cap:
     case cap_null_cap:
-    case cap_domain_cap:
         fc_ret.remainder = cap_null_cap_new();
         fc_ret.irq = irqInvalid;
         return fc_ret;
@@ -207,8 +206,6 @@ recycleCap(bool_t is_final, cap_t cap)
     case cap_null_cap:
         fail("recycleCap: can't reconstruct Null");
         break;
-    case cap_domain_cap:
-        return cap;
     case cap_cnode_cap:
         return cap;
     case cap_thread_cap:
@@ -240,7 +237,6 @@ recycleCap(bool_t is_final, cap_t cap)
             memzero(tcb, sizeof (tcb_t));
             Arch_initContext(&tcb->tcbContext);
             tcb->tcbTimeSlice = CONFIG_TIME_SLICE;
-            tcb->tcbDomain = ksCurDomain;
 
             return cap_thread_cap_new(TCB_REF(tcb));
         } else {
@@ -267,8 +263,6 @@ hasRecycleRights(cap_t cap)
 {
     switch (cap_get_capType(cap)) {
     case cap_null_cap:
-    case cap_domain_cap:
-        return false;
 
     case cap_endpoint_cap:
         return cap_endpoint_cap_get_capCanSend(cap) &&
@@ -339,12 +333,6 @@ sameRegionAs(cap_t cap_a, cap_t cap_b)
         if (cap_get_capType(cap_b) == cap_reply_cap) {
             return cap_reply_cap_get_capTCBPtr(cap_a) ==
                    cap_reply_cap_get_capTCBPtr(cap_b);
-        }
-        break;
-
-    case cap_domain_cap:
-        if (cap_get_capType(cap_b) == cap_domain_cap) {
-            return true;
         }
         break;
 
@@ -445,7 +433,6 @@ maskCapRights(cap_rights_t cap_rights, cap_t cap)
 
     switch (cap_get_capType(cap)) {
     case cap_null_cap:
-    case cap_domain_cap:
     case cap_cnode_cap:
     case cap_untyped_cap:
     case cap_reply_cap:
@@ -511,7 +498,6 @@ createObject(object_t t, void *regionBase, word_t userSize)
 
         Arch_initContext(&tcb->tcbContext);
         tcb->tcbTimeSlice = CONFIG_TIME_SLICE;
-        tcb->tcbDomain = ksCurDomain;
 
         return cap_thread_cap_new(TCB_REF(tcb));
     }
@@ -652,9 +638,6 @@ decodeInvocation(word_t label, unsigned int length,
     case cap_thread_cap:
         return decodeTCBInvocation(label, length, cap,
                                    slot, extraCaps, call, buffer);
-
-    case cap_domain_cap:
-        return decodeDomainInvocation(label, length, extraCaps, buffer);
 
     case cap_cnode_cap:
         return decodeCNodeInvocation(label, length, cap, extraCaps, buffer);

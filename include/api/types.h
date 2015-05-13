@@ -22,13 +22,7 @@
 /* cap_rights_t defined in api/types.bf */
 
 typedef uint32_t prio_t;
-typedef uint32_t  dom_t;
 typedef uint32_t cptr_t;
-
-enum domainConstants {
-    minDom = 0,
-    maxDom = CONFIG_NUM_DOMAINS - 1
-};
 
 struct cap_transfer {
     cptr_t ctReceiveRoot;

@@ -150,10 +150,4 @@
             <param dir="in" name="low_polarity" type="uint32_t"/>
         </method>
     </interface>
-	<interface name="seL4_DomainSet">
-		<method id="DomainSetSet" name="Set">
-			<param dir="in" name="domain" type="uint8_t"/>
-			<param dir="in" name="thread" type="seL4_TCB"/>
-		</method>
-	</interface>
 </api>

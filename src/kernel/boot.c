@@ -179,29 +179,28 @@ create_irq_cnode(void)
     return true;
 }
 
+// compile_assert(root_run_queue_cnode_size, BIT(PAGE_BITS - CTE_SIZE_BITS) > maxIRQ)
+
+#if 0
+BOOT_CODE bool_t
+create_root_run_queue_cnode(void)
+{
+    pptr_t pptr;
+    /* create an empty IRQ CNode */
+    pptr = alloc_region(PAGE_BITS);
+    if (!pptr) {
+        printf("Kernel init failing: could not create irq cnode\n");
+        return false;
+    }
+    memzero((void*)pptr, 1 << PAGE_BITS);
+    intStateIRQNode = (cte_t*)pptr;
+    return true;
+}
+#endif
+
 /* Check domain scheduler assumptions. */
-compile_assert(num_domains_valid,
-               CONFIG_NUM_DOMAINS >= 1 && CONFIG_NUM_DOMAINS <= 256)
 compile_assert(num_priorities_valid,
                CONFIG_NUM_PRIORITIES >= 1 && CONFIG_NUM_PRIORITIES <= 256)
-
-BOOT_CODE void
-create_domain_cap(cap_t root_cnode_cap)
-{
-    cap_t cap;
-    unsigned int i;
-
-    /* Check domain scheduler assumptions. */
-    assert(ksDomScheduleLength > 0);
-    for (i = 0; i < ksDomScheduleLength; i++) {
-        assert(ksDomSchedule[i].domain < CONFIG_NUM_DOMAINS);
-        assert(ksDomSchedule[i].length > 0);
-    }
-
-    cap = cap_domain_cap_new();
-    write_slot(SLOT_PTR(pptr_of_cap(root_cnode_cap), BI_CAP_DOM), cap);
-}
-
 
 BOOT_CODE cap_t
 create_ipcbuf_frame(cap_t root_cnode_cap, cap_t pd_cap, vptr_t vptr)
@@ -265,7 +264,6 @@ allocate_bi_frame(
     BI_PTR(pptr)->num_iopt_levels = 0;
     BI_PTR(pptr)->ipcbuf_vptr = ipcbuf_vptr;
     BI_PTR(pptr)->it_cnode_size_bits = CONFIG_ROOT_CNODE_SIZE_BITS;
-    BI_PTR(pptr)->it_domain = ksDomSchedule[ksDomScheduleIdx].domain;
 
     return pptr;
 }
@@ -415,10 +413,6 @@ create_initial_thread(
     setupReplyMaster(tcb);
     setThreadState(tcb, ThreadState_Running);
     ksSchedulerAction = SchedulerAction_ResumeCurrentThread;
-    ksCurThread = ksIdleThread;
-    ksCurDomain = ksDomSchedule[ksDomScheduleIdx].domain;
-    ksDomainTime = ksDomSchedule[ksDomScheduleIdx].length;
-    assert(ksCurDomain < CONFIG_NUM_DOMAINS && ksDomainTime > 0);
 
     /* initialise current thread pointer */
     switchToThread(tcb); /* initialises ksCurThread */

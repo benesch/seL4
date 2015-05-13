@@ -23,27 +23,16 @@
 #include <model/statedata.h>
 #include <util.h>
 
-static inline PURE
-unsigned int
-ready_queues_index(unsigned int dom, unsigned int prio)
-{
-    return dom * CONFIG_NUM_PRIORITIES + prio;
-}
-
 /* Add TCB to the head of a scheduler queue */
 void
 tcbSchedEnqueue(tcb_t *tcb)
 {
     if (!thread_state_get_tcbQueued(tcb->tcbState)) {
         tcb_queue_t queue;
-        dom_t dom;
         prio_t prio;
-        unsigned int idx;
 
-        dom = tcb->tcbDomain;
         prio = tcb->tcbPriority;
-        idx = ready_queues_index(dom, prio);
-        queue = ksReadyQueues[idx];
+        queue = ksReadyQueues[prio];
 
         if (!queue.end) { /* Empty list */
             queue.end = tcb;
@@ -54,7 +43,7 @@ tcbSchedEnqueue(tcb_t *tcb)
         tcb->tcbSchedNext = queue.head;
         queue.head = tcb;
 
-        ksReadyQueues[idx] = queue;
+        ksReadyQueues[prio] = queue;
 
         thread_state_ptr_set_tcbQueued(&tcb->tcbState, true);
     }
@@ -66,14 +55,10 @@ tcbSchedAppend(tcb_t *tcb)
 {
     if (!thread_state_get_tcbQueued(tcb->tcbState)) {
         tcb_queue_t queue;
-        dom_t dom;
         prio_t prio;
-        unsigned int idx;
 
-        dom = tcb->tcbDomain;
         prio = tcb->tcbPriority;
-        idx = ready_queues_index(dom, prio);
-        queue = ksReadyQueues[idx];
+        queue = ksReadyQueues[prio];
 
         if (!queue.head) { /* Empty list */
             queue.head = tcb;
@@ -84,7 +69,7 @@ tcbSchedAppend(tcb_t *tcb)
         tcb->tcbSchedNext = NULL;
         queue.end = tcb;
 
-        ksReadyQueues[idx] = queue;
+        ksReadyQueues[prio] = queue;
 
         thread_state_ptr_set_tcbQueued(&tcb->tcbState, true);
     }
@@ -96,14 +81,10 @@ tcbSchedDequeue(tcb_t *tcb)
 {
     if (thread_state_get_tcbQueued(tcb->tcbState)) {
         tcb_queue_t queue;
-        dom_t dom;
         prio_t prio;
-        unsigned int idx;
 
-        dom = tcb->tcbDomain;
         prio = tcb->tcbPriority;
-        idx = ready_queues_index(dom, prio);
-        queue = ksReadyQueues[idx];
+        queue = ksReadyQueues[prio];
 
         if (tcb->tcbSchedPrev) {
             tcb->tcbSchedPrev->tcbSchedNext = tcb->tcbSchedNext;
@@ -117,7 +98,7 @@ tcbSchedDequeue(tcb_t *tcb)
             queue.end = tcb->tcbSchedPrev;
         }
 
-        ksReadyQueues[idx] = queue;
+        ksReadyQueues[prio] = queue;
 
         thread_state_ptr_set_tcbQueued(&tcb->tcbState, false);
     }
@@ -712,51 +693,6 @@ decodeSetSpace(cap_t cap, unsigned int length, cte_t* slot,
                cRootCap, cRootSlot,
                vRootCap, vRootSlot,
                0, cap_null_cap_new(), NULL, thread_control_update_space);
-}
-
-exception_t
-decodeDomainInvocation(word_t label, unsigned int length, extra_caps_t extraCaps, word_t *buffer)
-{
-    word_t domain;
-    cap_t tcap;
-
-    if (unlikely(label != DomainSetSet)) {
-        current_syscall_error.type = seL4_IllegalOperation;
-        return EXCEPTION_SYSCALL_ERROR;
-    }
-
-    if (unlikely(length == 0)) {
-        userError("Domain Configure: Truncated message.");
-        current_syscall_error.type = seL4_TruncatedMessage;
-        return EXCEPTION_SYSCALL_ERROR;
-    } else {
-        domain = getSyscallArg(0, buffer);
-        if (domain >= CONFIG_NUM_DOMAINS) {
-            userError("Domain Configure: invalid domain (%u >= %u).",
-                      domain, CONFIG_NUM_DOMAINS);
-            current_syscall_error.type = seL4_InvalidArgument;
-            current_syscall_error.invalidArgumentNumber = 0;
-            return EXCEPTION_SYSCALL_ERROR;
-        }
-    }
-
-    if (unlikely(extraCaps.excaprefs[0] == NULL)) {
-        userError("Domain Configure: Truncated message.");
-        current_syscall_error.type = seL4_TruncatedMessage;
-        return EXCEPTION_SYSCALL_ERROR;
-    }
-
-    tcap = extraCaps.excaprefs[0]->cap;
-    if (unlikely(cap_get_capType(tcap) != cap_thread_cap)) {
-        userError("Domain Configure: thread cap required.");
-        current_syscall_error.type = seL4_InvalidArgument;
-        current_syscall_error.invalidArgumentNumber = 1;
-        return EXCEPTION_SYSCALL_ERROR;
-    }
-
-    setThreadState(ksCurThread, ThreadState_Restart);
-    setDomain(TCB_PTR(cap_thread_cap_get_capTCBPtr(tcap)), domain);
-    return EXCEPTION_NONE;
 }
 
 /* The following functions sit in the preemption monad and implement the

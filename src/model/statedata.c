@@ -15,7 +15,7 @@
 #include <object/tcb.h>
 
 /* Pointer to the head of the scheduler queue for each priority */
-tcb_queue_t ksReadyQueues[NUM_READY_QUEUES];
+tcb_queue_t ksReadyQueues[CONFIG_NUM_PRIORITIES];
 
 /* Current thread TCB pointer */
 tcb_t *ksCurThread;
@@ -35,13 +35,3 @@ word_t ksWorkUnitsCompleted;
 /* CNode containing interrupt handler endpoints */
 irq_state_t intStateIRQTable[maxIRQ + 1];
 cte_t *intStateIRQNode;
-
-/* Currently active domain */
-dom_t ksCurDomain;
-
-/* Domain timeslice remaining */
-word_t ksDomainTime;
-
-/* An index into ksDomSchedule for active domain and length. */
-uint32_t ksDomScheduleIdx;
-

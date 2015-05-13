@@ -104,13 +104,6 @@ block zombie_cap {
     field capType         8
 }
 
-block domain_cap {
-    padding 32
-
-    padding 24
-    field capType 8
-}
-
 ---- IA32-specific cap types
 
 block frame_cap {
@@ -256,7 +249,6 @@ tagged_union cap capType {
     tag irq_control_cap     0x0e
     tag irq_handler_cap     0x1e
     tag zombie_cap          0x2e
-    tag domain_cap	        0x3e
 
     -- 8-bit tag arch caps
 #ifdef CONFIG_IOMMU
