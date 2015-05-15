@@ -35,3 +35,7 @@ word_t ksWorkUnitsCompleted;
 /* CNode containing interrupt handler endpoints */
 irq_state_t intStateIRQTable[maxIRQ + 1];
 cte_t *intStateIRQNode;
+
+/* Root runqueue capability */
+runqueue_t *ksRunqueue;
+uint32_t ksRunqueueIndex;

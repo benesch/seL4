@@ -21,6 +21,7 @@
 #include <object/endpoint.h>
 #include <object/cnode.h>
 #include <object/interrupt.h>
+#include <object/runqueue.h>
 #include <object/tcb.h>
 #include <object/untyped.h>
 #include <model/preemption.h>
@@ -44,6 +45,8 @@ word_t getObjectSize(word_t t, word_t userObjSize)
             return AEP_SIZE_BITS;
         case seL4_CapTableObject:
             return CTE_SIZE_BITS + userObjSize;
+        case seL4_RunqueueObject:
+            return RUNQUEUE_SIZE_BITS;
         case seL4_UntypedObject:
             return userObjSize;
         default:
@@ -525,6 +528,10 @@ createObject(object_t t, void *regionBase, word_t userSize)
                                 (4 + unat \<acute>userSize))" */
         return cap_cnode_cap_new(userSize, 0, 0, CTE_REF(regionBase));
 
+    case seL4_RunqueueObject:
+        memzero(regionBase, 1UL << RUNQUEUE_SIZE_BITS);
+        return cap_runqueue_cap_new(RUNQUEUE_REF(regionBase));
+
     case seL4_UntypedObject:
         /*
          * No objects need to be created; instead, just insert caps into
@@ -653,6 +660,12 @@ decodeInvocation(word_t label, unsigned int length,
     case cap_irq_handler_cap:
         return decodeIRQHandlerInvocation(label, length,
                                           cap_irq_handler_cap_get_capIRQ(cap), extraCaps, buffer);
+
+    case cap_schedule_control_cap:
+        return decodeScheduleControlInvocation(label, length, extraCaps, buffer);
+
+    case cap_runqueue_cap:
+        return decodeRunqueueInvocation(label, length, cap, extraCaps, buffer);
 
     default:
         fail("Invalid cap type");

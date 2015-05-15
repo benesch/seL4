@@ -415,6 +415,12 @@ init_node_state(
         )
     );
 
+    /* create the root runqueue cap */
+    write_slot(
+        SLOT_PTR(pptr_of_cap(root_cnode_cap), BI_CAP_RUNQUEUE),
+        cap_schedule_control_cap_new()
+    );
+
     /* create the IRQ CNode */
     if (!create_irq_cnode()) {
         return false;

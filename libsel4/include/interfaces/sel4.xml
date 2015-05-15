@@ -20,6 +20,17 @@
 			<param dir="in" name="num_objects" type="int"/>
 		</method>
 	</interface>
+	<interface name="seL4_ScheduleControl">
+		<method id="ScheduleControlStartRunqueue" name="StartRunqueue">
+			<param dir="in" name="runqueue" type="seL4_CPtr" />
+		</method>
+	</interface>
+	<interface name="seL4_Runqueue">
+		<method id="RunqueueSetSlot" name="SetSlot">
+			<param dir="in" name="tcb" type="seL4_CPtr" />
+			<param dir="in" name="slot" type="uint32_t" />
+		</method>
+	</interface>
     <interface name="seL4_TCB">
 		<method id="TCBReadRegisters" name="ReadRegisters">
 			<param dir="in" name="suspend_source" type="bool"/>

@@ -200,6 +200,16 @@ typedef struct tcb tcb_t;
 compile_assert(tcb_size_sane,
                (1 << TCB_SIZE_BITS) + sizeof(tcb_t) <= (1 << TCB_BLOCK_SIZE_BITS))
 
+struct runqueue {
+    tcb_t *runqueueSlots[1024];
+};
+
+typedef struct runqueue runqueue_t;
+
+#define RUNQUEUE_SIZE_BITS 12
+#define RUNQUEUE_PTR(r) ((runqueue_t *)r)
+#define RUNQUEUE_REF(p) ((unsigned int)p)
+
 /* IA32-specific object types */
 
 #define GDT_NULL    0

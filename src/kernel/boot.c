@@ -179,25 +179,6 @@ create_irq_cnode(void)
     return true;
 }
 
-// compile_assert(root_run_queue_cnode_size, BIT(PAGE_BITS - CTE_SIZE_BITS) > maxIRQ)
-
-#if 0
-BOOT_CODE bool_t
-create_root_run_queue_cnode(void)
-{
-    pptr_t pptr;
-    /* create an empty IRQ CNode */
-    pptr = alloc_region(PAGE_BITS);
-    if (!pptr) {
-        printf("Kernel init failing: could not create irq cnode\n");
-        return false;
-    }
-    memzero((void*)pptr, 1 << PAGE_BITS);
-    intStateIRQNode = (cte_t*)pptr;
-    return true;
-}
-#endif
-
 /* Check domain scheduler assumptions. */
 compile_assert(num_priorities_valid,
                CONFIG_NUM_PRIORITIES >= 1 && CONFIG_NUM_PRIORITIES <= 256)

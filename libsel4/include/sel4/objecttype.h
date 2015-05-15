@@ -17,6 +17,7 @@ typedef enum api_object {
     seL4_EndpointObject,
     seL4_AsyncEndpointObject,
     seL4_CapTableObject,
+    seL4_RunqueueObject,
     seL4_NonArchObjectTypeCount,
 } seL4_ObjectType;
 

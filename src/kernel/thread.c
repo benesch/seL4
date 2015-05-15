@@ -309,13 +309,16 @@ schedule(void)
 void
 chooseThread(void)
 {
-    int p;
     tcb_t *thread;
 
-    for (p = seL4_MaxPrio; p != -1; p--) {
-        thread = ksReadyQueues[p].head;
-        if (thread != NULL) {
-            assert(isRunnable(thread));
+    if (ksRunqueue == NULL) {
+        return;
+    }
+
+    for (; ksRunqueueIndex < 1024; ksRunqueueIndex++) {
+        thread = ksRunqueue->runqueueSlots[ksRunqueueIndex];
+        if (thread != NULL && isRunnable(thread)) {
+            ksRunqueueIndex++;
             switchToThread(thread);
             return;
         }

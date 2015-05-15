@@ -96,6 +96,19 @@ block irq_handler_cap {
     field capType  8
 }
 
+block schedule_control_cap {
+    padding       32
+    padding       24
+    field capType  8
+}
+
+block runqueue_cap {
+    field capRunqueuePtr 32
+
+    padding              24
+    field capType         8
+}
+
 block zombie_cap {
     field capZombieID     32
 
@@ -246,9 +259,11 @@ tagged_union cap capType {
     -- 15 (0xf) to determine which caps are 8-bit.
     
     -- 8-bit tag caps
-    tag irq_control_cap     0x0e
-    tag irq_handler_cap     0x1e
-    tag zombie_cap          0x2e
+    tag irq_control_cap      0x0e
+    tag irq_handler_cap      0x1e
+    tag zombie_cap           0x2e
+    tag schedule_control_cap 0x3e
+    tag runqueue_cap         0x4e
 
     -- 8-bit tag arch caps
 #ifdef CONFIG_IOMMU

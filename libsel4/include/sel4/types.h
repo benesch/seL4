@@ -66,7 +66,8 @@ typedef seL4_CPtr seL4_IRQHandler;
 typedef seL4_CPtr seL4_IRQControl;
 typedef seL4_CPtr seL4_TCB;
 typedef seL4_CPtr seL4_Untyped;
-typedef seL4_CPtr seL4_DomainSet;
+typedef seL4_CPtr seL4_ScheduleControl;
+typedef seL4_CPtr seL4_Runqueue;
 
 #define seL4_NilData seL4_CapData_Badge_new(0)
 

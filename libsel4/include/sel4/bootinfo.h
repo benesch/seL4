@@ -29,7 +29,7 @@ enum {
     seL4_CapIOSpace             =  8, /* global IO space cap (null cap if no IOMMU support) */
     seL4_CapBootInfoFrame       =  9, /* bootinfo frame cap */
     seL4_CapInitThreadIPCBuffer = 10, /* initial thread's IPC buffer frame cap */
-    seL4_CapDomain              = 11  /* global domain controller cap */
+    seL4_CapRunqueue            = 11  /* root runqueue cap */
 };
 
 /* Legacy code will have assumptions on the vspace root being a Page Directory
